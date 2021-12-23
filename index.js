@@ -1,26 +1,3 @@
-/*
-app.get('/users', (request, response) => {
-    //const { name, age } = request.query // Destructuring assignment
-    
-    //return response.json({name, age})
-
-})
-
-app.get('/users/:id', (request, response) => {
-
-    const { id } = request.params
-
-    console.log(id)
-
-    return response.send({id})
-})
-
-app.get('/users/', (request, response) => {
-
-    const {name, age} = request.body
-
-    return response.send({name, age})
-})*/
 
 /* 
         - Query params => meusite.com/users?nome=rodolfo&age=28 //FILTROS
@@ -33,13 +10,15 @@ app.get('/users/', (request, response) => {
         - DELETE        => Deletar informacoes no back-end
         - Middleware    => INTERCEPTADOR => Tem o poder de parar ou alterar dados da requisicao
 */
-const { response, request } = require('express')
-const express = require('express')
-const uuid = require('uuid')
+const { response, request } = require('express');
+const express = require('express');
+const uuid = require('uuid');
+const cors = require('cors');
 
-const port = 3000
-const app = express()
-app.use(express.json())
+const port = 3001;
+const app = express();
+app.use(express.json());
+app.use(cors())
 
 
 
@@ -66,13 +45,21 @@ app.get('/users', (request, response) => {
 })
 
 app.post('/users', (request, response) => {
+try{
     const { name, age } = request.body
+
+    if(age < 18) throw new Error("Only allowed users over 18 years old")
 
     const user = { id:uuid.v4(), name, age }
     
     users.push(user)
     
     return response.status(201).json(user)
+} catch(err){
+    return response.status(400).json({error:err.message});
+} finally {
+    console.log("Terminou tudo")
+}
 })
 
 app.put('/users/:id', checkUserId, (request, response) => {
